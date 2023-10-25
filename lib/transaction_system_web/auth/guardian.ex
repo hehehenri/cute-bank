@@ -35,7 +35,7 @@ defmodule TransactionSystemWeb.Auth.Guardian do
   def generate_token(user) do
     # TODO: Is it possible to fail encoding?
     with {:ok, token, _claims} <- encode_and_sign(user) do
-      {:ok, token}
+      {:ok, token, user}
     else
       err -> err
     end
