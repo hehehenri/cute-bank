@@ -18,7 +18,7 @@ defmodule TransactionSystem.Accounts.User do
     |> cast(attrs, [:first_name, :last_name, :balance, :cpf, :password])
     |> validate_required([:first_name, :last_name, :cpf, :password])
     |> validate_format(:cpf, ~r/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)
-    |> unique_constraint(:cpf)
+    |> unique_constraint(:cpf, message: "already registered")
     |> put_password_hash()
   end
 

@@ -6,10 +6,12 @@ defmodule TransactionSystem.Repo.Migrations.CreateUsers do
       add :first_name, :string
       add :last_name,  :string
       add :balance,    :integer, default: 0
-      add :cpf,        :string, unique: true
+      add :cpf,        :string
       add :password,   :string
 
       timestamps(type: :utc_datetime)
     end
+
+    create unique_index(:users, [:cpf])
   end
 end
