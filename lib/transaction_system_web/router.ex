@@ -7,5 +7,6 @@ defmodule TransactionSystemWeb.Router do
 
   scope "/api", TransactionSystemWeb do
     pipe_through :api
+    post "/user/create", UserController, :create
   end
 end

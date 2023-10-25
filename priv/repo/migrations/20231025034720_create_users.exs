@@ -7,6 +7,7 @@ defmodule TransactionSystem.Repo.Migrations.CreateUsers do
       add :last_name,  :string
       add :balance,    :integer, default: 0
       add :cpf,        :string, unique: true
+      add :password,   :string
 
       timestamps(type: :utc_datetime)
     end

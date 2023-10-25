@@ -30,6 +30,10 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :transaction_system, TransactionSystemWeb.Auth.Guardian,
+  issuer: "transaction_system",
+  secret_key: "vuPhpgT65Nw2fZzqR2/mglPtawL5rsP1AjTmnx9kb5Onv4PuyAirTr/DeKAA4MyP"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

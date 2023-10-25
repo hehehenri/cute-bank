@@ -1,5 +1,6 @@
 defmodule TransactionSystem.Accounts do
   import Ecto.Query, warn: false
+  alias Hex.API.User
   alias TransactionSystem.Repo
 
   alias TransactionSystem.Accounts.User
@@ -9,6 +10,12 @@ defmodule TransactionSystem.Accounts do
   end
 
   def get_user!(id), do: Repo.get!(User, id)
+
+  def get_user_by_cpf!(cpf) do
+    User
+    |> where(cpf: ^cpf)
+    |> Repo.one!()
+  end
 
   def create_user(attrs \\ %{}) do
     %User{}
