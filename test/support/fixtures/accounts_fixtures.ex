@@ -11,9 +11,11 @@ defmodule TransactionSystem.AccountsFixtures do
     {:ok, user} =
       attrs
       |> Enum.into(%{
-        balance: 42,
-        first_name: "some first_name",
-        last_name: "some last_name"
+        balance: 0,
+        first_name: "John",
+        last_name: "Doe",
+        cpf: "111.111.111-00",
+        password: "password"
       })
       |> TransactionSystem.Accounts.create_user()
 
