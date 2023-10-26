@@ -8,6 +8,7 @@ defmodule TransactionSystem.Accounts.User do
     field :cpf,        :string
     field :password,   :string
     has_many :entries, TransactionSystem.Transactions.Entry
+    has_one :balance, TransactionSystem.Transactions.Balance
 
     timestamps(type: :utc_datetime)
   end

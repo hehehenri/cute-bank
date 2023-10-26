@@ -1,5 +1,6 @@
 defmodule TransactionSystem.Accounts do
   import Ecto.Query, warn: false
+  alias TransactionSystem.Transactions.Balance
   alias Hex.API.User
   alias TransactionSystem.Repo
 
@@ -18,9 +19,16 @@ defmodule TransactionSystem.Accounts do
   end
 
   def create_user(attrs \\ %{}) do
-    %User{}
+    with {:ok, user} <- %User{}
     |> User.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert() do
+      user
+      |> Ecto.build_assoc(:balance)
+      |> Balance.changeset(%{})
+      |> Repo.insert()
+
+      {:ok, user}
+    end
   end
 
   def update_user(%User{} = user, attrs) do
