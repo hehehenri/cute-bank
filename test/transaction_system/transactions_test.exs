@@ -1,11 +1,11 @@
 defmodule TransactionSystem.TransactionsTest do
+  alias TransactionSystem.Transactions
   alias TransactionSystem.Transactions.Balance
   use TransactionSystem.DataCase
 
-  alias TransactionSystem.Transactions
+  import TransactionSystem.AccountsFixtures
 
   describe "transaction_entries" do
-    import TransactionSystem.AccountsFixtures
 
     test "create_entry with valid data creates a entry and updates user balance" do
       sender = user_fixture()
@@ -71,9 +71,31 @@ defmodule TransactionSystem.TransactionsTest do
 
       sender
       |> Ecto.assoc(:balance)
+      |> Repo.update_all(set: [total: 11])
+
+      {:ok, amount} = Transactions.withdraw(sender, 5)
+
+      assert amount == 6
+    end
+
+    test "withdraw fails if user doesnt have enough funds" do
+      sender = user_fixture()
+      receiver = user_fixture(%{cpf: "222.222.222-22"})
+
+      assert {:error, :not_enough_funds} = Transactions.withdraw(sender, 5)
+    end
+
+    test "deposit updates user balance" do
+      sender = user_fixture()
+      receiver = user_fixture(%{cpf: "222.222.222-22"})
+
+      sender
+      |> Ecto.assoc(:balance)
       |> Repo.update_all(set: [total: 10])
 
-      pog = Transactions.withdraw(sender, 5)
+      {:ok, amount} = Transactions.deposit(sender, 5)
+
+      assert amount == 15
     end
   end
 end

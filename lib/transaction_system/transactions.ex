@@ -62,8 +62,7 @@ defmodule TransactionSystem.Transactions do
 
   defp get_user_balance_and_lock(%User{} = user) do
     balance = user
-    |> Ecto.assoc(:balance)
-    |> lock("FOR UPDATE NOWAIT")
+    |> User.assoc_and_lock(:balance)
     |> Repo.one()
 
     case balance do

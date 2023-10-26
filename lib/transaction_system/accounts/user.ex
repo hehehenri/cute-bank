@@ -1,6 +1,8 @@
 defmodule TransactionSystem.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query, warn: false
+  alias TransactionSystem.Accounts.User
 
   schema "users" do
     field :first_name, :string
@@ -28,4 +30,10 @@ defmodule TransactionSystem.Accounts.User do
   end
 
   defp put_password_hash(changeset), do: changeset
+
+  def assoc_and_lock(%User{} = user, assoc) do
+    user
+    |> Ecto.assoc(assoc)
+    |> lock("FOR UPDATE NOWAIT")
+  end
 end
