@@ -63,8 +63,6 @@ defmodule TransactionSystem.Transactions do
         })
         |> Repo.insert!()
 
-        IO.inspect(debit)
-
         {credit, debit}
       end
     end)

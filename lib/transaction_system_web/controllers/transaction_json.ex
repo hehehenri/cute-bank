@@ -1,4 +1,4 @@
-defmodule TransactionSystemWeb.EntryJSON do
+defmodule TransactionSystemWeb.TransactionJSON do
   alias TransactionSystem.Transactions.Entry
 
   def index(%{transaction_entries: transaction_entries}) do

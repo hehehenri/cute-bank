@@ -1,4 +1,4 @@
-defmodule TransactionSystemWeb.EntryController do
+defmodule TransactionSystemWeb.TransactionController do
   use TransactionSystemWeb, :controller
 
   alias TransactionSystem.Transactions
@@ -9,7 +9,7 @@ defmodule TransactionSystemWeb.EntryController do
 
   defp parse_payload(payload) do
     case payload do
-      %{"amount" => amount, "receiver_cpf" => receiver_cpf} -> {:ok, amount, receiver_cpf}
+      %{"transaction" => %{"amount" => amount, "receiver_cpf" => receiver_cpf}} -> {:ok, amount, receiver_cpf}
       _payload -> {:error, :invalid_payload}
     end
 
