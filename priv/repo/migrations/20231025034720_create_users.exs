@@ -5,7 +5,6 @@ defmodule TransactionSystem.Repo.Migrations.CreateUsers do
     create table(:users) do
       add :first_name, :string
       add :last_name,  :string
-      add :balance,    :integer, default: 0
       add :cpf,        :string
       add :password,   :string
 

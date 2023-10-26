@@ -13,7 +13,6 @@ defmodule TransactionSystemWeb.UserControllerTest do
   }
 
   @invalid_payload %{
-    balance: "invalid-balance",
     first_name: nil,
     last_name: nil,
     cpf: nil,
@@ -25,11 +24,10 @@ defmodule TransactionSystemWeb.UserControllerTest do
   end
 
   describe "create user" do
-    test "renders user when data is valid", %{conn: conn} do
+    test "create and render user when data is valid", %{conn: conn} do
       conn = post(conn, ~p"/api/user/create", user: @payload)
 
       assert %{
-        "balance" => 0,
         "first_name" => "some first_name",
         "last_name" => "some last_name",
         "cpf" => "000.000.000-00",
@@ -65,7 +63,6 @@ defmodule TransactionSystemWeb.UserControllerTest do
         response = json_response(conn, 200)
 
         assert %{
-          "balance" => 0,
           "cpf" => "000.000.000-00",
           "first_name" => "John",
           "last_name" => "Doe",

@@ -31,8 +31,8 @@ defmodule TransactionSystemWeb.Router do
     post "/user/login", UserController, :login
   end
 
-
   scope "/api", TransactionSystemWeb do
     pipe_through [:api, :auth]
+    post "/transaction/create", EntryController, :create
   end
 end

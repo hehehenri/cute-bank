@@ -10,7 +10,6 @@ defmodule TransactionSystem.AccountsTest do
     import TransactionSystem.AccountsFixtures
 
     @invalid_attrs %{
-      balance: "invalid-balance",
       first_name: nil,
       last_name: nil,
       cpf: nil,
@@ -31,7 +30,6 @@ defmodule TransactionSystem.AccountsTest do
       }
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
-      assert user.balance == 0
       assert user.first_name == "John"
       assert user.last_name == "Doe"
       assert user.cpf == "000.000.000-00"

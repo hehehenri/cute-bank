@@ -11,7 +11,6 @@ defmodule TransactionSystem.AccountsFixtures do
     {:ok, user} =
       attrs
       |> Enum.into(%{
-        balance: 0,
         first_name: "John",
         last_name: "Doe",
         cpf: "111.111.111-00",
