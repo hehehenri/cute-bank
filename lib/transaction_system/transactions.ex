@@ -9,6 +9,57 @@ defmodule TransactionSystem.Transactions do
   alias TransactionSystem.Transactions.Entry
   alias TransactionSystem.Accounts
 
+  def create_entry(sender, receiver_cpf, amount) when is_integer(amount) do
+    try do
+      create_entry_transaction(sender, receiver_cpf, amount)
+    rescue
+      # TODO: this smells, fix it later
+      NotEnoughFunds -> {:error, :not_enough_funds}
+    end
+  end
+
+  def deposit(%User{} = user, amount) when is_integer(amount) do
+    %Balance{total: total} = deposit_for_user!(user, amount)
+
+    {:ok, total}
+  end
+
+  def withdraw(%User{} = user, amount) when is_integer(amount) do
+    try do
+      %Balance{total: total} = withdraw_for_user!(user, amount)
+
+      {:ok, total}
+    rescue
+      NotEnoughFunds -> {:error, :not_enough_funds}
+    end
+  end
+
+  defp deposit!(%Balance{total: total} = balance, amount) do
+    balance
+      |> Balance.changeset(%{total: total + amount})
+      |> Repo.update!()
+  end
+
+  defp deposit_for_user!(%User{} = user, amount) do
+    {:ok, balance} = get_user_balance_and_lock(user)
+    deposit!(balance, amount)
+  end
+
+  defp withdraw!(%Balance{total: total} = balance, amount) do
+    if total < amount do
+      raise NotEnoughFunds
+    end
+
+    balance
+      |> Balance.changeset(%{total: total - amount})
+      |> Repo.update!()
+  end
+
+  defp withdraw_for_user!(%User{} = user, amount) do
+    {:ok, balance} = get_user_balance_and_lock(user)
+    withdraw!(balance, amount)
+  end
+
   defp get_user_balance_and_lock(%User{} = user) do
     balance = user
     |> Ecto.assoc(:balance)
@@ -23,25 +74,9 @@ defmodule TransactionSystem.Transactions do
 
   defp create_entry_transaction(sender, receiver_cpf, amount) when is_number(amount) do
     Repo.transaction(fn ->
-      with receiver <- Accounts.get_user_by_cpf!(receiver_cpf),
-           {:ok, receiver_balance} <- receiver |> get_user_balance_and_lock(),
-           {:ok, sender_balance} <- sender |> get_user_balance_and_lock()
-      do
-        if sender_balance.total < amount do
-          raise NotEnoughFunds
-        end
-
-        sender_balance
-        |> Balance.changeset(%{
-          total: sender_balance.total - amount
-        })
-        |> Repo.update!()
-
-        receiver_balance
-        |> Balance.changeset(%{
-          total: receiver_balance.total + amount
-        })
-        |> Repo.update!()
+      with receiver <- Accounts.get_user_by_cpf!(receiver_cpf) do
+        withdraw_for_user!(sender, amount)
+        deposit_for_user!(receiver, amount)
 
         transaction_id = UUID.generate()
 
@@ -66,15 +101,5 @@ defmodule TransactionSystem.Transactions do
         {credit, debit}
       end
     end)
-  end
-
-
-  def create_entry(sender, receiver_cpf, amount) when is_number(amount) do
-    try do
-      create_entry_transaction(sender, receiver_cpf, amount)
-    rescue
-      # TODO: this smells, fix it later
-      NotEnoughFunds -> {:error, :not_enough_funds}
-    end
   end
 end
