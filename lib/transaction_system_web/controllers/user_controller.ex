@@ -1,7 +1,6 @@
 defmodule TransactionSystemWeb.UserController do
   use TransactionSystemWeb, :controller
 
-  alias TransactionSystemWeb.Auth.ErrorResponse.Unauthorized
   alias TransactionSystemWeb.Auth.Guardian
   alias TransactionSystem.Accounts
   alias TransactionSystem.Accounts.User
@@ -24,7 +23,7 @@ defmodule TransactionSystemWeb.UserController do
       |> put_status(:ok)
       |> render(:show, user: user, token: token)
     else
-      {:error, :invalid_credentials} -> raise Unauthorized, message: "Invalid credentials"
+      {:error, :invalid_credentials} -> conn |> put_status(401) |> json(%{message: "unauthorized"})
     end
   end
 end
