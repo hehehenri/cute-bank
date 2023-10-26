@@ -24,11 +24,36 @@ defmodule TransactionSystem.TransactionsTest do
       assert debit.amount == 500
       assert debit.kind == :debit
 
-      sender_balance = sender |> Ecto.assoc(:balance) |> Repo.one!()
-      receiver_balance = receiver |> Ecto.assoc(:balance) |> Repo.one!()
+      %Balance{total: sender_balance} = sender |> Ecto.assoc(:balance) |> Repo.one!()
+      %Balance{total: receiver_balance} = receiver |> Ecto.assoc(:balance) |> Repo.one!()
 
-      assert sender_balance.total == 0
-      assert receiver_balance.total == 500
+      assert sender_balance == 0
+      assert receiver_balance == 500
+    end
+
+    test "create_entry/1 consistently updates the user balance and race conditions doesn't occur" do
+      sender = user_fixture()
+      receiver = user_fixture(%{cpf: "222.222.222-22"})
+
+      sender
+      |> Ecto.assoc(:balance)
+      |> Repo.update_all(set: [total: 10])
+
+
+      # Don't spawn more than 10 tasks, since there are only 10 database connections available
+      tasks = Enum.map(1..10, fn _ ->
+        Task.async(fn ->
+          {:ok, {_credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 1)
+        end)
+      end)
+
+      Task.await_many(tasks, :infinity)
+
+      %Balance{total: sender_balance} = sender |> Ecto.assoc(:balance) |> Repo.one!()
+      assert sender_balance == 0
+
+      %Balance{total: receiver_balance} = receiver |> Ecto.assoc(:balance) |> Repo.one!()
+      assert receiver_balance == 10
     end
   end
 end
