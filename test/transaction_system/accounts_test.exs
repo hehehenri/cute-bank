@@ -1,6 +1,4 @@
 defmodule TransactionSystem.AccountsTest do
-  alias TransactionSystem.Transactions.Balance
-  alias TransactionSystemWeb.Auth.Guardian
   use TransactionSystem.DataCase
 
   alias TransactionSystem.Accounts

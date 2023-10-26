@@ -2,7 +2,6 @@ defmodule TransactionSystemWeb.EntryControllerTest do
   use TransactionSystemWeb.ConnCase
 
   alias TransactionSystemWeb.Auth.Guardian
-  alias TransactionSystem.Transactions.Entry
   import TransactionSystem.AccountsFixtures
 
   setup %{conn: conn} do
@@ -26,13 +25,13 @@ defmodule TransactionSystemWeb.EntryControllerTest do
       |> post(~p"/api/transaction/create", transaction: payload)
 
       assert %{
-        "debit" => %{
-          "amount" => 500,
-        },
-        "credit" => %{
-          "amount" => 500,
-        },
+        "debit" => %{"amount" => 500} = debit,
+        "credit" => %{"amount" => 500} = credit,
       } = json_response(conn, 201)["data"]
+
+      assert credit["user_id"] == sender.id
+      assert debit["user_id"] == receiver.id
+      assert credit["transaction_id"] == debit["transaction_id"]
     end
   end
 end

@@ -3,8 +3,6 @@ defmodule TransactionSystemWeb.UserControllerTest do
 
   import TransactionSystem.AccountsFixtures
 
-  alias TransactionSystem.Accounts.User
-
   @payload %{
     first_name: "some first_name",
     last_name: "some last_name",
@@ -12,7 +10,7 @@ defmodule TransactionSystemWeb.UserControllerTest do
     password: "password",
   }
 
-  @invalid_payload %{
+  @invalid_payload%{
     first_name: nil,
     last_name: nil,
     cpf: nil,
@@ -40,24 +38,14 @@ defmodule TransactionSystemWeb.UserControllerTest do
     end
   end
 
-  defp create_user(_) do
-    user = user_fixture()
-    %{user: user}
-  end
-
   @payload %{
     cpf: "000.000.000-00",
     password: "password",
   }
 
-  @invalid_payload %{
-    cpf: "000.000.000-00",
-    password: "wrong_password",
-  }
-
   describe "login user" do
      test "login user when credentials are valid", %{conn: conn} do
-        user = user_fixture(%{cpf: "000.000.000-00", password: "password"})
+        _user = user_fixture(%{cpf: "000.000.000-00", password: "password"})
 
         conn = post(conn, ~p"/api/user/login", @payload)
         response = json_response(conn, 200)

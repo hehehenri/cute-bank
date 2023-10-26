@@ -4,8 +4,6 @@ defmodule TransactionSystem.TransactionsTest do
   alias TransactionSystem.Transactions
 
   describe "transaction_entries" do
-    alias TransactionSystem.Transactions.Entry
-
     import TransactionSystem.AccountsFixtures
 
     test "create_entry/1 with valid data creates a entry" do
