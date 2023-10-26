@@ -41,6 +41,7 @@ defmodule TransactionSystem.Transactions do
         |> Balance.changeset(%{
           total: receiver_balance.total + amount
         })
+        |> Repo.update!()
 
         transaction_id = UUID.generate()
 

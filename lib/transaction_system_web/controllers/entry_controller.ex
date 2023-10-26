@@ -33,6 +33,4 @@ defmodule TransactionSystemWeb.EntryController do
         |> json(%{message: "invalid payload"})
     end
   end
-
-
 end
