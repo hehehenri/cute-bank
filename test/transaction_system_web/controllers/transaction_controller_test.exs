@@ -107,6 +107,42 @@ defmodule TransactionSystemWeb.EntryControllerTest do
     end
   end
 
+  describe "check users balance" do
+    test "checks users consistent balance", %{conn: conn} do
+      user = user_fixture()
+      sender = user_fixture(%{cpf: "222.222.222-22"})
+      sender |> deposit(3)
+
+      {:ok, {_credit, _debit}} = Transactions.create_entry(sender, user.cpf, 3)
+      {:ok, {_credit, _debit}} = Transactions.create_entry(user, sender.cpf, 1)
+      {:ok, {_credit, _debit}} = Transactions.create_entry(user, sender.cpf, 1)
+      {:ok, {_credit, _debit}} = Transactions.create_entry(sender, user.cpf, 2)
+
+      {:ok, token, _sender} = Guardian.generate_token(user)
+
+      conn =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> get(~p"/api/balance/check")
+
+      assert = %{"status" => "consistent", "user_balance" => 3, "calc_balance" => 3} = json_response(conn, 200)
+    end
+
+    test "checks users inconsistent balance", %{conn: conn} do
+      sender = user_fixture(%{cpf: "222.222.222-22"})
+      sender |> deposit(3)
+
+      {:ok, token, _sender} = Guardian.generate_token(sender)
+
+      conn =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> get(~p"/api/balance/check")
+
+      assert = %{"status" => "inconsistent", "user_balance" => 3, "calc_balance" => 0} = json_response(conn, 200)
+    end
+  end
+
   defp get_balance(%User{} = user) do
     user |> Ecto.assoc(:balance) |> Repo.one!()
   end
