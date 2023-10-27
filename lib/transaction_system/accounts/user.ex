@@ -2,6 +2,7 @@ defmodule TransactionSystem.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
+  alias TransactionSystem.Transactions.Entry
   alias TransactionSystem.Transactions.Balance
   alias TransactionSystem.Accounts.User
   alias TransactionSystem.Repo
@@ -58,5 +59,17 @@ defmodule TransactionSystem.Accounts.User do
 
       {:ok, user}
     end
+  end
+
+  def entries(%User{} = user) do
+    from e in Entry,
+    where:
+      e.user_id == ^user.id and
+      is_nil(e.refunded_at)
+  end
+
+  def total_balance(%User{} = user) do
+    user = user |> Repo.preload(:balance)
+    user.balance.total
   end
 end

@@ -115,4 +115,12 @@ defmodule TransactionSystemWeb.TransactionController do
     conn
     |> json(%{balance: total})
   end
+
+  def check(conn, _opts) do
+    user = current_resource(conn)
+    {user_balance, calc_balance} = Transactions.check_transactions(user)
+
+    conn
+    |> json(%{user_balance: user_balance, calc_balance: calc_balance})
+  end
 end

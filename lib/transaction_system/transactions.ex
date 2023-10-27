@@ -1,5 +1,6 @@
 defmodule TransactionSystem.Transactions do
   import Ecto.Query, warn: false
+  alias Ecto.Adapter.Transaction
   alias TransactionSystem.Transactions.Balance
   alias TransactionSystem.Transactions.Exceptions.NotEnoughFunds
   alias TransactionSystem.Accounts.User
@@ -66,6 +67,26 @@ defmodule TransactionSystem.Transactions do
 
   def balance(%User{} = user) do
     user |> User.total_balance()
+  end
+
+  def sum_transactions([], acc) do
+    acc
+  end
+
+  def sum_transactions([%Entry{kind: :credit, amount: amount} | transactions], acc) do
+    sum_transactions(transactions, acc - amount)
+  end
+
+  def sum_transactions([%Entry{kind: :debit, amount: amount} | transactions], acc) do
+    sum_transactions(transactions, acc + amount)
+  end
+
+  def check_transactions(%User{} = user) do
+    transactions = user |> User.entries() |> Repo.all()
+    user_balance = user |> User.total_balance()
+    calc_balance = sum_transactions(transactions, 0)
+
+    {user_balance, calc_balance}
   end
 
   def deposit!(%Balance{total: total} = balance, amount) do
