@@ -19,16 +19,7 @@ defmodule TransactionSystem.Accounts do
   end
 
   def create_user(attrs \\ %{}) do
-    with {:ok, user} <- %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert() do
-      user
-      |> Ecto.build_assoc(:balance)
-      |> Balance.changeset(%{})
-      |> Repo.insert()
-
-      {:ok, user}
-    end
+    User.create(attrs)
   end
 
   def update_user(%User{} = user, attrs) do

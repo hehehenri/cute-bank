@@ -81,4 +81,12 @@ defmodule TransactionSystemWeb.TransactionController do
         |> json(%{message: "not enough funds"})
     end
   end
+
+  def balance(conn, _opts) do
+    user = current_resource(conn)
+    total = user |> Transactions.balance()
+
+    conn
+      |> json(%{balance: total})
+  end
 end

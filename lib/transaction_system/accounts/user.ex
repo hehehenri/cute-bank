@@ -2,7 +2,9 @@ defmodule TransactionSystem.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
+  alias TransactionSystem.Transactions.Balance
   alias TransactionSystem.Accounts.User
+  alias TransactionSystem.Repo
 
   schema "users" do
     field :first_name, :string
@@ -35,5 +37,28 @@ defmodule TransactionSystem.Accounts.User do
     user
     |> Ecto.assoc(assoc)
     |> lock("FOR UPDATE NOWAIT")
+  end
+
+  def total_balance(%User{} = user) do
+    balance = user |> Repo.preload(:balance)
+    balance.total
+  end
+
+  def create(attrs \\ %{}) do
+    {:ok, result} = Repo.transaction(fn ->
+      with {:ok, user} <- %User{}
+        |> User.changeset(attrs)
+        |> Repo.insert()
+      do
+        user
+        |> Ecto.build_assoc(:balance)
+        |> Balance.changeset(%{})
+        |> Repo.insert()
+
+        {:ok, user}
+
+      end
+    end)
+    result
   end
 end

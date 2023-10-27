@@ -55,6 +55,10 @@ defmodule TransactionSystem.Transactions do
     result
   end
 
+  def balance(%User{} = user) do
+    user |> User.total_balance()
+  end
+
   def deposit!(%Balance{total: total} = balance, amount) do
     balance
       |> Balance.changeset(%{total: total + amount})
