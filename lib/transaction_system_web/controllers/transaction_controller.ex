@@ -1,6 +1,7 @@
 defmodule TransactionSystemWeb.TransactionController do
   use TransactionSystemWeb, :controller
 
+  alias Plug.Conn
   alias TransactionSystem.Transactions
   alias TransactionSystem.Transactions.Entry
   import Guardian.Plug
@@ -52,6 +53,15 @@ defmodule TransactionSystemWeb.TransactionController do
       {:error, :not_enough_funds} -> not_enough_funds_resp(conn)
       {:error, :invalid_payload} -> invalid_payload_resp(conn)
     end
+  end
+
+  def search(conn, %{"start_date" => start_date, "end_date" => end_date}) do
+    user = current_resource(conn)
+    entries = Transactions.search_date_range(start_date, end_date, user)
+
+    conn
+    |> put_status(200)
+    |> render(:index, entries: entries)
   end
 
   def create(conn, payload) do

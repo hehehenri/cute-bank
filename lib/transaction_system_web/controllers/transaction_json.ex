@@ -1,8 +1,8 @@
 defmodule TransactionSystemWeb.TransactionJSON do
   alias TransactionSystem.Transactions.Entry
 
-  def index(%{transaction_entries: transaction_entries}) do
-    %{data: for(entry <- transaction_entries, do: data(entry))}
+  def index(%{entries: entries}) do
+    %{data: for(entry <- entries, do: data(entry))}
   end
 
   def show(%{debit: debit, credit: credit}) do

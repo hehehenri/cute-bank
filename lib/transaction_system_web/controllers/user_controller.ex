@@ -12,7 +12,7 @@ defmodule TransactionSystemWeb.UserController do
           {:ok, token, _user} <- Guardian.generate_token(user)
     do
       conn
-      |> put_status(:created)
+      |> put_status(201)
       |> render(:show, user: user, token: token)
     end
   end
@@ -20,7 +20,7 @@ defmodule TransactionSystemWeb.UserController do
   def login(conn, %{"cpf" => cpf, "password" => password}) do
     with {:ok, token, user} <- Guardian.auth(cpf, password) do
       conn
-      |> put_status(:ok)
+      |> put_status(200)
       |> render(:show, user: user, token: token)
     else
       {:error, :invalid_credentials} -> conn |> put_status(401) |> json(%{message: "unauthorized"})

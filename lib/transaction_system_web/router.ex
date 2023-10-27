@@ -20,6 +20,7 @@ defmodule TransactionSystemWeb.Router do
     pipe_through [:api, :auth]
 
     get  "/transaction",        TransactionController, :list
+    post "/transaction/search", TransactionController, :search
     post "/transaction/create", TransactionController, :create
     post "/transaction/refund", TransactionController, :refund
 

@@ -9,6 +9,14 @@ defmodule TransactionSystem.Transactions do
   alias TransactionSystem.Transactions.Entry
   alias TransactionSystem.Accounts
 
+  def search_date_range(start_date, end_date, %User{} = user) do
+    start_date = start_date |> UTCDateTime.from_iso8601!()
+    end_date = end_date |> UTCDateTime.from_iso8601!()
+
+    Entry.date_range(start_date, end_date, user.id)
+    |> Repo.all()
+  end
+
   def create_entry(sender, receiver_cpf, amount) when is_integer(amount) do
     try do
       create_entry_transaction(sender, receiver_cpf, amount)
@@ -35,22 +43,23 @@ defmodule TransactionSystem.Transactions do
   end
 
   def refund(%User{} = user, transaction_id) do
-    {:ok, result} = Repo.transaction(fn ->
-      with {:ok, credit, debit} <- Entry.get_with_transaction_id(transaction_id) do
-        if credit.user_id == user.id do
-          try do
-            credit |> Entry.refund()
-            debit |> Entry.refund()
+    {:ok, result} =
+      Repo.transaction(fn ->
+        with {:ok, credit, debit} <- Entry.get_with_transaction_id(transaction_id) do
+          if credit.user_id == user.id do
+            try do
+              credit |> Entry.refund()
+              debit |> Entry.refund()
 
-            :ok
-          rescue
-            NotEnoughFunds -> {:error, :not_enough_funds}
+              :ok
+            rescue
+              NotEnoughFunds -> {:error, :not_enough_funds}
+            end
+          else
+            {:error, :user_is_not_the_transaction_owner}
           end
-        else
-          {:error, :user_is_not_the_transaction_owner}
         end
-      end
-    end)
+      end)
 
     result
   end
@@ -61,8 +70,8 @@ defmodule TransactionSystem.Transactions do
 
   def deposit!(%Balance{total: total} = balance, amount) do
     balance
-      |> Balance.changeset(%{total: total + amount})
-      |> Repo.update!()
+    |> Balance.changeset(%{total: total + amount})
+    |> Repo.update!()
   end
 
   def deposit!(%User{} = user, amount) do
@@ -76,8 +85,8 @@ defmodule TransactionSystem.Transactions do
     end
 
     balance
-      |> Balance.changeset(%{total: total - amount})
-      |> Repo.update!()
+    |> Balance.changeset(%{total: total - amount})
+    |> Repo.update!()
   end
 
   def withdraw!(%User{} = user, amount) do
@@ -93,23 +102,25 @@ defmodule TransactionSystem.Transactions do
 
         transaction_id = UUID.generate()
 
-        credit = sender
-        |> Ecto.build_assoc(:entries)
-        |> Entry.changeset(%{
-          amount: amount,
-          kind: :credit,
-          transaction_id: transaction_id,
-        })
-        |> Repo.insert!()
+        credit =
+          sender
+          |> Ecto.build_assoc(:entries)
+          |> Entry.changeset(%{
+            amount: amount,
+            kind: :credit,
+            transaction_id: transaction_id
+          })
+          |> Repo.insert!()
 
-        debit = receiver
-        |> Ecto.build_assoc(:entries)
-        |> Entry.changeset(%{
-          amount: amount,
-          kind: :debit,
-          transaction_id: transaction_id,
-        })
-        |> Repo.insert!()
+        debit =
+          receiver
+          |> Ecto.build_assoc(:entries)
+          |> Entry.changeset(%{
+            amount: amount,
+            kind: :debit,
+            transaction_id: transaction_id
+          })
+          |> Repo.insert!()
 
         {credit, debit}
       end
