@@ -40,15 +40,15 @@ defmodule TransactionSystem.TransactionsTest do
       |> Ecto.assoc(:balance)
       |> Repo.update_all(set: [total: 10])
 
+
       # Don't spawn more than 10 tasks, since there are only 10 database connections available
       # TODO: I'm not quite sure if this test actually detects race conditions.
       #       Look for how to properly do it.
-      tasks =
-        Enum.map(1..10, fn _ ->
-          Task.async(fn ->
-            {:ok, {_credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 1)
-          end)
+      tasks = Enum.map(1..10, fn _ ->
+        Task.async(fn ->
+          {:ok, {_credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 1)
         end)
+      end)
 
       Task.await_many(tasks, :infinity)
 
@@ -111,9 +111,7 @@ defmodule TransactionSystem.TransactionsTest do
       |> Ecto.assoc(:balance)
       |> Repo.update_all(set: [total: 10])
 
-      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} =
-        Transactions.create_entry(sender, receiver.cpf, 5)
-
+      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 5)
       assert :ok = Transactions.refund(sender, transaction_id)
 
       sender = sender |> refresh()
@@ -131,9 +129,7 @@ defmodule TransactionSystem.TransactionsTest do
       |> Ecto.assoc(:balance)
       |> Repo.update_all(set: [total: 10])
 
-      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} =
-        Transactions.create_entry(sender, receiver.cpf, 5)
-
+      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 5)
       {:error, :user_is_not_the_transaction_owner} = Transactions.refund(receiver, transaction_id)
     end
 
@@ -145,9 +141,7 @@ defmodule TransactionSystem.TransactionsTest do
       |> Ecto.assoc(:balance)
       |> Repo.update_all(set: [total: 10])
 
-      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} =
-        Transactions.create_entry(sender, receiver.cpf, 5)
-
+      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 5)
       :ok = Transactions.refund(sender, transaction_id)
       assert {:error, :transaction_not_found} = Transactions.refund(sender, transaction_id)
     end
@@ -157,9 +151,7 @@ defmodule TransactionSystem.TransactionsTest do
       receiver = user_fixture(%{cpf: "222.222.222-22"})
       sender |> deposit(5)
 
-      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} =
-        Transactions.create_entry(sender, receiver.cpf, 5)
-
+      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 5)
       receiver |> withdraw(5)
 
       assert {:error, :not_enough_funds} = Transactions.refund(sender, transaction_id)
@@ -202,6 +194,33 @@ defmodule TransactionSystem.TransactionsTest do
       transactions = Transactions.search_date_range(start_date, end_date, sender)
 
       assert length(transactions) == 2
+    end
+  end
+
+  describe "check user balance" do
+    test "check_balance/1 checks if user's balance is consistent based on user's transactions" do
+      user = user_fixture()
+      sender = user_fixture(%{cpf: "333.333.333-33"})
+
+      sender |> deposit(1000)
+
+      {:ok, {_credit, _debit}} = Transactions.create_entry(sender, user.cpf, 1000)
+      {:ok, {_credit, _debit}} = Transactions.create_entry(user, sender.cpf, 1)
+
+      assert {:consistent, 999, 999} = Transactions.check_balance(user)
+    end
+
+    test "check_balance/1 detects inconsistent user balance" do
+      user = user_fixture()
+      sender = user_fixture(%{cpf: "333.333.333-33"})
+
+      sender |> deposit(1000)
+
+      {:ok, {_credit, _debit}} = Transactions.create_entry(sender, user.cpf, 1000)
+      {:ok, {_credit, _debit}} = Transactions.create_entry(user, sender.cpf, 1)
+      user |> deposit(1)
+
+      assert {:inconsistent, 1000, 999} = Transactions.check_balance(user)
     end
   end
 end

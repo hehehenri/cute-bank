@@ -81,12 +81,17 @@ defmodule TransactionSystem.Transactions do
     sum_transactions(transactions, acc + amount)
   end
 
-  def check_transactions(%User{} = user) do
+  def check_balance(%User{} = user) do
     transactions = user |> User.entries() |> Repo.all()
     user_balance = user |> User.total_balance()
     calc_balance = sum_transactions(transactions, 0)
 
-    {user_balance, calc_balance}
+    status = case user_balance == calc_balance do
+      true -> :consistent
+      false -> :inconsistent
+    end
+
+    {status, user_balance, calc_balance}
   end
 
   def deposit!(%Balance{total: total} = balance, amount) do
