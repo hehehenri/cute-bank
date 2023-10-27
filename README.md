@@ -70,7 +70,7 @@ Authentication is required for some of the endpoints. Make sure to include appro
 {
   "transaction": {
     "amount": 5000,
-    "receiver_pdf": "000.000.000-00",
+    "receiver_cpf": "000.000.000-00",
   }
 }
 ```
@@ -92,7 +92,7 @@ Authentication is required for some of the endpoints. Make sure to include appro
 {
   "amount": 5000
 }
-  ```
+```
 - **POST** `/api/balance/deposit`
   - Deposit funds into a user's balance.
 ```json
@@ -100,3 +100,6 @@ Authentication is required for some of the endpoints. Make sure to include appro
   "amount": 5000
 }
 ```
+
+- **GET** `/api/balance`
+  - The logged user's balance is displayed.
