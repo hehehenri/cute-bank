@@ -1,6 +1,5 @@
 defmodule TransactionSystem.Transactions do
   import Ecto.Query, warn: false
-  alias Ecto.Adapter.Transaction
   alias TransactionSystem.Transactions.Balance
   alias TransactionSystem.Transactions.Exceptions.NotEnoughFunds
   alias TransactionSystem.Accounts.User

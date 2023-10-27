@@ -7,8 +7,8 @@ defmodule TransactionSystem.TransactionsTest do
   import TransactionSystem.AccountsFixtures
   import TransactionSystem.TransactionsFixtures
 
-  describe "transaction_entries" do
-    test "create_entry/3 with valid data creates a entry and updates user balance" do
+  describe "create_entry/3" do
+    test "creates a entry and updates user balance" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -32,7 +32,7 @@ defmodule TransactionSystem.TransactionsTest do
       assert receiver_balance == 500
     end
 
-    test "create_entry/3 consistently updates the user balance and race conditions doesn't occur" do
+    test "consistently updates the user balance and race conditions doesn't occur" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -59,7 +59,7 @@ defmodule TransactionSystem.TransactionsTest do
       assert receiver_balance == 10
     end
 
-    test "create_entry/3 fails to create entries when sender doesn't have enough money" do
+    test "fails to create entries when sender doesn't have enough money" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -67,8 +67,8 @@ defmodule TransactionSystem.TransactionsTest do
     end
   end
 
-  describe "balance_deposit_and_withdraw" do
-    test "withdraw/2 updates user balance" do
+  describe "withdraw/2" do
+    test "updates user balance" do
       sender = user_fixture()
       _receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -81,14 +81,16 @@ defmodule TransactionSystem.TransactionsTest do
       assert amount == 6
     end
 
-    test "withdraw/2 fails if user doesnt have enough funds" do
+    test "fails if user doesnt have enough funds" do
       sender = user_fixture()
       _receiver = user_fixture(%{cpf: "222.222.222-22"})
 
       assert {:error, :not_enough_funds} = Transactions.withdraw(sender, 5)
     end
+  end
 
-    test "deposit/2 updates user balance" do
+  describe "deposit/2" do
+    test "updates user balance" do
       sender = user_fixture()
       _receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -102,8 +104,8 @@ defmodule TransactionSystem.TransactionsTest do
     end
   end
 
-  describe "refund_transaction" do
-    test "refund/2 marks transactions as refunded and updates the users balances" do
+  describe "refund/2" do
+    test "marks transactions as refunded and updates the users balances" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -121,7 +123,7 @@ defmodule TransactionSystem.TransactionsTest do
       assert receiver.balance.total == 0
     end
 
-    test "refund/2 can't be used by the receivers" do
+    test "only senders can refund transactions" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -133,7 +135,7 @@ defmodule TransactionSystem.TransactionsTest do
       {:error, :user_is_not_the_transaction_owner} = Transactions.refund(receiver, transaction_id)
     end
 
-    test "refund/2 can't refund the same transaction twice" do
+    test "a transaction cannot be refunded twice" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
 
@@ -146,7 +148,7 @@ defmodule TransactionSystem.TransactionsTest do
       assert {:error, :transaction_not_found} = Transactions.refund(sender, transaction_id)
     end
 
-    test "refund/2 can't be used when receiver hasn't enough funds" do
+    test "can't refund transaction when receiver has no funds" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
       sender |> deposit(5)
@@ -158,8 +160,8 @@ defmodule TransactionSystem.TransactionsTest do
     end
   end
 
-  describe "search transaction entries" do
-    test "search_date_range/3 returns all transactions made by a user in a date range" do
+  describe "search_date_range/3" do
+    test "returns all transactions made by a user in a date range" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
       sender |> deposit(3)
@@ -175,7 +177,7 @@ defmodule TransactionSystem.TransactionsTest do
       assert length(transactions) == 3
     end
 
-    test "search_date_range/3 doesnt returns transactions from other users" do
+    test "doesn't search for transactions from other users" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
       other_sender = user_fixture(%{cpf: "333.333.333-33"})
@@ -197,8 +199,8 @@ defmodule TransactionSystem.TransactionsTest do
     end
   end
 
-  describe "check user balance" do
-    test "check_balance/1 checks if user's balance is consistent based on user's transactions" do
+  describe "check_balance/1" do
+    test "checks if user's balance is consistent based on user's transactions" do
       user = user_fixture()
       sender = user_fixture(%{cpf: "333.333.333-33"})
 
@@ -210,7 +212,7 @@ defmodule TransactionSystem.TransactionsTest do
       assert {:consistent, 999, 999} = Transactions.check_balance(user)
     end
 
-    test "check_balance/1 detects inconsistent user balance" do
+    test "detects inconsistent user balance" do
       user = user_fixture()
       sender = user_fixture(%{cpf: "333.333.333-33"})
 

@@ -67,9 +67,4 @@ defmodule TransactionSystem.Accounts.User do
       e.user_id == ^user.id and
       is_nil(e.refunded_at)
   end
-
-  def total_balance(%User{} = user) do
-    user = user |> Repo.preload(:balance)
-    user.balance.total
-  end
 end
