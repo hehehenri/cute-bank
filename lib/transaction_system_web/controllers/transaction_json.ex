@@ -16,8 +16,11 @@ defmodule TransactionSystemWeb.TransactionJSON do
     %{
       id: entry.id,
       amount: entry.amount,
+      kind: entry.kind,
       transaction_id: entry.transaction_id,
       user_id: entry.user_id,
+      inserted_at: entry.inserted_at,
+      updated_at: entry.updated_at
     }
   end
 end
