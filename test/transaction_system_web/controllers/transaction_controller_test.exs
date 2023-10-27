@@ -68,7 +68,7 @@ defmodule TransactionSystemWeb.EntryControllerTest do
       |> put_req_header("authorization", "Bearer " <> token)
       |> post(~p"/api/transaction/refund", %{transaction_id: transaction_id})
 
-      assert conn.status == 200
+      assert %{"message" => "transaction refunded"} = json_response(conn, 200)
 
       sender = sender |> refresh()
       assert sender.balance.total == 10

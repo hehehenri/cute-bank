@@ -40,25 +40,21 @@ defmodule TransactionSystem.Accounts.User do
   end
 
   def total_balance(%User{} = user) do
-    balance = user |> Repo.preload(:balance)
-    balance.total
+    user = user |> Repo.preload(:balance)
+    user.balance.total
   end
 
   def create(attrs \\ %{}) do
-    {:ok, result} = Repo.transaction(fn ->
-      with {:ok, user} <- %User{}
-        |> User.changeset(attrs)
-        |> Repo.insert()
-      do
-        user
-        |> Ecto.build_assoc(:balance)
-        |> Balance.changeset(%{})
-        |> Repo.insert()
+    with {:ok, user} <- %User{}
+      |> User.changeset(attrs)
+      |> Repo.insert()
+    do
+      user
+      |> Ecto.build_assoc(:balance)
+      |> Balance.changeset(%{})
+      |> Repo.insert()
 
-        {:ok, user}
-
-      end
-    end)
-    result
+      {:ok, user}
+    end
   end
 end
