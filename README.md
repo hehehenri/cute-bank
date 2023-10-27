@@ -11,44 +11,44 @@
 
 - **POST** `/api/user/create`
   - Create a new user account.
-  ```json
-  {
+```json
+{
+  "user": {
+    "first_name": "John",
+    "last_name": "Doe",
     "cpf": "000.000.000-00",
-    "password": "s3cure_pa$sword"
+    "password": "s3cure_pa$sword",
   }
-  ```
+}
+```
 - **POST** `/api/user/login`
   - Log in an existing user.
-  ```json
-  {
-    "user": {
-      "first_name": "John",
-      "last_name": "Doe",
-      "cpf": "000.000.000-00",
-      "password": "s3cure_pa$sword",
-    }
-  }
-  ```
+```json
+{
+  "cpf": "000.000.000-00",
+  "password": "s3cure_pa$sword"
+}
+```
 
 ### Transaction Management
 
 - **POST** `/api/transaction/create`
   - Create a new transaction.
-  ```json
-  {
-    "transaction": {
-      "amount": 5000,
-      "receiver_pdf": "000.000.000-00",
-    }
+```json
+{
+  "transaction": {
+    "amount": 5000,
+    "receiver_pdf": "000.000.000-00",
   }
-  ```
+}
+```
 - **POST** `/api/transaction/refund`
   - Initiate a refund for a transaction.
-  ```json
-  {
-    "transaction_id": "01ec23e3-6a91-4a0a-9b01-291b27f6ee3f"
-  }
-  ```
+```json
+{
+  "transaction_id": "01ec23e3-6a91-4a0a-9b01-291b27f6ee3f"
+}
+```
 - **GET** `/api/transaction`
   - Retrieve a list of transactions.
 
@@ -56,18 +56,18 @@
 
 - **POST** `/api/balance/withdraw`
   - Withdraw funds from a user's balance.
-  ```json
-  {
-    "amount": 5000
-  }
+```json
+{
+  "amount": 5000
+}
   ```
 - **POST** `/api/balance/deposit`
   - Deposit funds into a user's balance.
-  ```json
-  {
-    "amount": 5000
-  }
-  ```
+```json
+{
+  "amount": 5000
+}
+```
 
 ## Authentication
 
