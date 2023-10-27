@@ -1,7 +1,9 @@
 defmodule TransactionSystem.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query, warn: false
+  import Ecto.Query
+  alias TransactionSystem.Repo
+  alias TransactionSystem.Transactions.Entry
   alias TransactionSystem.Accounts.User
 
   schema "users" do

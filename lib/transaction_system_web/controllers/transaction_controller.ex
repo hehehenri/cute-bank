@@ -68,4 +68,9 @@ defmodule TransactionSystemWeb.TransactionController do
       {:error, :invalid_payload} -> invalid_payload_resp(conn)
     end
   end
+
+  def refund(conn, %{"transaction_id" => transaction_id}) do
+    user = current_resource(conn)
+
+  end
 end

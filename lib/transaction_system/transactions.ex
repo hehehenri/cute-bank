@@ -34,6 +34,19 @@ defmodule TransactionSystem.Transactions do
     end
   end
 
+  def refund(%User{} = user, transaction_id) do
+    Repo.transaction(fn ->
+      {:ok, credit, debit} = Entry.get_with_transaction_id(transaction_id)
+
+      if credit.user_id == user.id do
+        credit |> Entry.refund()
+        debit |> Entry.refund()
+      else
+        {:error, :user_is_not_the_transaction_owner}
+      end
+    end)
+  end
+
   defp deposit!(%Balance{total: total} = balance, amount) do
     balance
       |> Balance.changeset(%{total: total + amount})
@@ -41,7 +54,7 @@ defmodule TransactionSystem.Transactions do
   end
 
   defp deposit_for_user!(%User{} = user, amount) do
-    {:ok, balance} = get_user_balance_and_lock(user)
+    balance = user |> User.assoc_and_lock(:balance) |> Repo.one!()
     deposit!(balance, amount)
   end
 
@@ -56,19 +69,8 @@ defmodule TransactionSystem.Transactions do
   end
 
   defp withdraw_for_user!(%User{} = user, amount) do
-    {:ok, balance} = get_user_balance_and_lock(user)
+    balance = user |> User.assoc_and_lock(:balance) |> Repo.one!()
     withdraw!(balance, amount)
-  end
-
-  defp get_user_balance_and_lock(%User{} = user) do
-    balance = user
-    |> User.assoc_and_lock(:balance)
-    |> Repo.one()
-
-    case balance do
-      nil -> {:error, :user_not_found}
-      %Balance{} = balance -> {:ok, balance}
-    end
   end
 
   defp create_entry_transaction(sender, receiver_cpf, amount) when is_number(amount) do

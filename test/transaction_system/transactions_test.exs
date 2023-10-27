@@ -64,7 +64,7 @@ defmodule TransactionSystem.TransactionsTest do
     end
   end
 
-  describe "user_balance_deposit_and_withdraw" do
+  describe "balance_deposit_and_withdraw" do
     test "withdraw updates user balance" do
       sender = user_fixture()
       receiver = user_fixture(%{cpf: "222.222.222-22"})
@@ -97,5 +97,9 @@ defmodule TransactionSystem.TransactionsTest do
 
       assert amount == 15
     end
+  end
+
+  describe "refund_transaction" do
+
   end
 end
