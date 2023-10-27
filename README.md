@@ -48,7 +48,7 @@ Authentication is required for some of the endpoints. Make sure to include appro
   "user": {
     "first_name": "John",
     "last_name": "Doe",
-    "": "000.000.000-00",
+    "cpf": "000.000.000-00",
     "password": "s3cure_pa$sword",
   }
 }
@@ -57,7 +57,7 @@ Authentication is required for some of the endpoints. Make sure to include appro
   - Log in an existing user.
 ```json
 {
-  "": "000.000.000-00",
+  "cpf": "000.000.000-00",
   "password": "s3cure_pa$sword"
 }
 ```
@@ -70,7 +70,7 @@ Authentication is required for some of the endpoints. Make sure to include appro
 {
   "transaction": {
     "amount": 5000,
-    "receiver_": "000.000.000-00",
+    "receiver_cpf": "000.000.000-00",
   }
 }
 ```
