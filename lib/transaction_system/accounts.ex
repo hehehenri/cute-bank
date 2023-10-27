@@ -1,6 +1,5 @@
 defmodule TransactionSystem.Accounts do
   import Ecto.Query, warn: false
-  alias TransactionSystem.Transactions.Balance
   alias Hex.API.User
   alias TransactionSystem.Repo
 

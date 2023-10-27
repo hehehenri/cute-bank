@@ -1,5 +1,4 @@
 defmodule TransactionSystem.TransactionsTest do
-  alias TransactionSystem.Accounts.User
   alias TransactionSystem.Transactions.Entry
   alias TransactionSystem.Transactions
   alias TransactionSystem.Transactions.Balance
@@ -72,7 +71,7 @@ defmodule TransactionSystem.TransactionsTest do
   describe "balance_deposit_and_withdraw" do
     test "withdraw updates user balance" do
       sender = user_fixture()
-      receiver = user_fixture(%{cpf: "222.222.222-22"})
+      _receiver = user_fixture(%{cpf: "222.222.222-22"})
 
       sender
       |> Ecto.assoc(:balance)
@@ -85,14 +84,14 @@ defmodule TransactionSystem.TransactionsTest do
 
     test "withdraw fails if user doesnt have enough funds" do
       sender = user_fixture()
-      receiver = user_fixture(%{cpf: "222.222.222-22"})
+      _receiver = user_fixture(%{cpf: "222.222.222-22"})
 
       assert {:error, :not_enough_funds} = Transactions.withdraw(sender, 5)
     end
 
     test "deposit updates user balance" do
       sender = user_fixture()
-      receiver = user_fixture(%{cpf: "222.222.222-22"})
+      _receiver = user_fixture(%{cpf: "222.222.222-22"})
 
       sender
       |> Ecto.assoc(:balance)
