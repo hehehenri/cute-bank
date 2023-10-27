@@ -78,6 +78,29 @@ defmodule TransactionSystemWeb.EntryControllerTest do
     end
   end
 
+  describe "search transaction entries" do
+    test "search return transaction entries", %{conn: conn} do
+      sender = user_fixture()
+      receiver = user_fixture(%{cpf: "222.222.222-22"})
+      sender |> deposit(3)
+
+      start_date = DateTime.now!("Etc/UTC") |> DateTime.to_iso8601()
+      {:ok, {_credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 1)
+      {:ok, {_credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 1)
+      {:ok, {_credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 1)
+      end_date = DateTime.now!("Etc/UTC") |> DateTime.to_iso8601()
+
+      {:ok, token, _sender} = Guardian.generate_token(sender)
+      conn = conn
+      |> put_req_header("authorization", "Bearer " <> token)
+      |> post(~p"/api/transaction/search", %{start_date: start_date, end_date: end_date})
+
+      transactions = json_response(conn, 200)["data"]
+
+      assert length(transactions) == 3
+    end
+  end
+
   defp get_balance(%User{} = user) do
     user |> Ecto.assoc(:balance) |> Repo.one!()
   end
