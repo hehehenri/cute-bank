@@ -64,6 +64,14 @@ Authentication is required for some of the endpoints. Make sure to include appro
 
 ### Transaction Management
 
+- **POST** `/api/transaction/search`
+  - Search for transactions between a date range.
+```json
+{
+   "start_date": "2023-10-26T12:23:19Z"
+   "end_date": "2023-10-27T15:29:19Z"
+}
+```
 - **POST** `/api/transaction/create`
   - Create a new transaction.
 ```json
