@@ -111,3 +111,6 @@ Authentication is required for some of the endpoints. Make sure to include appro
 
 - **GET** `/api/balance`
   - The logged user's balance is displayed.
+
+- **GET** `/api/balance/check`
+  - Check if the user's balance is valid based on the sum of the user transactions.
