@@ -16,4 +16,8 @@ defmodule TransactionSystem.Transactions.Balance do
     |> validate_required([:total])
     |> validate_number(:total, greater_than_or_equal_to: 0)
   end
+
+  def refund do
+
+  end
 end

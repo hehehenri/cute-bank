@@ -1,11 +1,15 @@
 defmodule TransactionSystemWeb.EntryControllerTest do
   use TransactionSystemWeb.ConnCase
 
+  alias TransactionSystem.Transactions
+  alias TransactionSystem.Transactions.Entry
   alias TransactionSystem.Transactions.Balance
   alias TransactionSystem.Accounts.User
   alias TransactionSystem.Repo
   alias TransactionSystemWeb.Auth.Guardian
+
   import TransactionSystem.AccountsFixtures
+  import TransactionSystem.TransactionsFixtures
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -45,6 +49,32 @@ defmodule TransactionSystemWeb.EntryControllerTest do
 
       %Balance {total: receiver_balance} = receiver |> get_balance()
       assert receiver_balance == 500
+    end
+  end
+
+  describe "refund transaction" do
+    test "refund transaction and its effects", %{conn: conn} do
+      sender = user_fixture()
+      receiver = user_fixture(%{cpf: "222.222.222-22"})
+
+      sender
+      |> Ecto.assoc(:balance)
+      |> Repo.update_all(set: [total: 10])
+
+      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 5)
+
+      {:ok, token, _sender} = Guardian.generate_token(sender)
+      conn = conn
+      |> put_req_header("authorization", "Bearer " <> token)
+      |> post(~p"/api/transaction/refund", %{transaction_id: transaction_id})
+
+      assert conn.status == 200
+
+      sender = sender |> refresh()
+      assert sender.balance.total == 10
+
+      receiver = receiver |> refresh()
+      assert receiver.balance.total == 0
     end
   end
 

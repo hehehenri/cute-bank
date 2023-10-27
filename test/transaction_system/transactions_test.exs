@@ -6,6 +6,7 @@ defmodule TransactionSystem.TransactionsTest do
   use TransactionSystem.DataCase
 
   import TransactionSystem.AccountsFixtures
+  import TransactionSystem.TransactionsFixtures
 
   describe "transaction_entries" do
 
@@ -158,26 +159,5 @@ defmodule TransactionSystem.TransactionsTest do
 
       assert {:error, :not_enough_funds} = Transactions.refund(sender, transaction_id)
     end
-  end
-
-  defp refresh(%User{} = user) do
-    Repo.get!(User, user.id)
-    |> Repo.preload([:balance, :entries])
-  end
-
-  defp deposit(%User{} = user, amount) when is_integer(amount) do
-    balance = user |> Ecto.assoc(:balance) |> Repo.one!()
-
-    balance
-    |> Balance.changeset(%{total: balance.total + amount})
-    |> Repo.update!()
-  end
-
-  defp withdraw(%User{} = user, amount) when is_integer(amount) do
-    balance = user |> Ecto.assoc(:balance) |> Repo.one!()
-
-    balance
-    |> Balance.changeset(%{total: balance.total - amount})
-    |> Repo.update!()
   end
 end

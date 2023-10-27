@@ -72,5 +72,13 @@ defmodule TransactionSystemWeb.TransactionController do
   def refund(conn, %{"transaction_id" => transaction_id}) do
     user = current_resource(conn)
 
+
+    case Transactions.refund(user, transaction_id) do
+      :ok -> conn |> put_status(200)
+      {:error, :user_is_not_the_transaction_owner} -> conn |> put_status(403)
+      {:error, :not_enough_funds} -> conn
+        |> put_status(400)
+        |> json(%{message: "not enough funds"})
+    end
   end
 end
