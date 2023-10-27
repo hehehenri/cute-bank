@@ -1,5 +1,39 @@
 # Cute Bank
 
+## Getting Started
+
+1. **Installation**
+   - Clone the repository and install the required dependencies.
+
+2. **Build Containers**
+   - Set up your database configuration and any environment-specific settings.
+```bash
+$ docker-compose up -d
+```
+
+3. **Install Dependencies**
+   - Set up your database configuration and any environment-specific settings.
+```bash
+$ mix deps.get
+```
+
+4. **Database Migration**
+   - Run database migrations to create the necessary tables.
+```bash
+$ mix ecto.create
+$ mix ecto.migrate
+```
+
+5. **Running the Application**
+   - Start the application and ensure it's accessible.
+```bash
+$ mix phx.server
+```
+
+## Authentication
+
+Authentication is required for some of the endpoints. Make sure to include appropriate authentication tokens in your requests when accessing protected routes.
+
 ## API Endpoints
 
 ### Health Check
@@ -68,43 +102,3 @@
   "amount": 5000
 }
 ```
-
-## Authentication
-
-Authentication is required for some of the endpoints. Make sure to include appropriate authentication tokens in your requests when accessing protected routes.
-
-## Getting Started
-
-1. **Installation**
-   - Clone the repository and install the required dependencies.
-
-2. **Build Containers**
-   - Set up your database configuration and any environment-specific settings.
-```bash
-$ docker-compose up -d
-```
-
-3. **Database Migration**
-   - Run database migrations to create the necessary tables.
-```bash
-$ mix ecto.create
-$ mix ecto.migrate
-```
-
-4. **Running the Application**
-   - Start the application and ensure it's accessible.
-```bash
-$ mix phx.server
-```
-
-## Additional Documentation
-
-For more detailed information about the system, additional configuration options, and API request/response examples, refer to the official documentation [link-to-documentation].
-
-## Contribute
-
-We welcome contributions to enhance and improve this Transaction System. Feel free to submit pull requests or report any issues in the repository.
-
-## License
-
-This project is licensed under the [License Name] - see the [LICENSE.md](LICENSE.md) file for details.
