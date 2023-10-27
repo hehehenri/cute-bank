@@ -19,13 +19,13 @@ defmodule TransactionSystemWeb.Router do
   scope "/api", TransactionSystemWeb do
     pipe_through [:api, :auth]
 
-    get  "/transaction",        TransactionController, :list
+    get "/transaction", TransactionController, :list
     post "/transaction/search", TransactionController, :search
     post "/transaction/create", TransactionController, :create
     post "/transaction/refund", TransactionController, :refund
 
-    get  "/balance",            TransactionController, :balance
-    post "/balance/withdraw",   TransactionController, :withdraw
-    post "/balance/deposit",    TransactionController, :deposit
+    get "/balance", TransactionController, :balance
+    post "/balance/withdraw", TransactionController, :withdraw
+    post "/balance/deposit", TransactionController, :deposit
   end
 end

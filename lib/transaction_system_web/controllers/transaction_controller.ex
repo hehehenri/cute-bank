@@ -1,7 +1,5 @@
 defmodule TransactionSystemWeb.TransactionController do
   use TransactionSystemWeb, :controller
-
-  alias Plug.Conn
   alias TransactionSystem.Transactions
   alias TransactionSystem.Transactions.Entry
   import Guardian.Plug
@@ -10,14 +8,14 @@ defmodule TransactionSystemWeb.TransactionController do
 
   defp not_enough_funds_resp(conn) do
     conn
-      |> put_status(400)
-      |> json(%{message: "not enough funds"})
+    |> put_status(400)
+    |> json(%{message: "not enough funds"})
   end
 
   defp invalid_payload_resp(conn) do
-   conn
-        |> put_status(422)
-        |> json(%{message: "invalid payload"})
+    conn
+    |> put_status(422)
+    |> json(%{message: "invalid payload"})
   end
 
   defp parse_payload(%{"transaction" => %{"amount" => amount, "receiver_cpf" => receiver_cpf}}) do
@@ -68,8 +66,8 @@ defmodule TransactionSystemWeb.TransactionController do
     sender = current_resource(conn)
 
     with {:ok, amount, receiver_cpf} <- parse_payload(payload),
-         {:ok, {%Entry{} = credit, %Entry{} = debit}} <- Transactions.create_entry(sender, receiver_cpf, amount) do
-
+         {:ok, {%Entry{} = credit, %Entry{} = debit}} <-
+           Transactions.create_entry(sender, receiver_cpf, amount) do
       conn
       |> put_status(:created)
       |> render(:show, credit: credit, debit: debit)
@@ -115,6 +113,6 @@ defmodule TransactionSystemWeb.TransactionController do
     total = user |> Transactions.balance()
 
     conn
-      |> json(%{balance: total})
+    |> json(%{balance: total})
   end
 end

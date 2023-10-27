@@ -4,9 +4,9 @@ defmodule TransactionSystem.Repo.Migrations.CreateUsers do
   def change do
     create table(:users) do
       add :first_name, :string
-      add :last_name,  :string
-      add :cpf,        :string
-      add :password,   :string
+      add :last_name, :string
+      add :cpf, :string
+      add :password, :string
 
       timestamps(type: :utc_datetime)
     end

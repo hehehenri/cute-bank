@@ -26,28 +26,29 @@ defmodule TransactionSystemWeb.EntryControllerTest do
 
       payload = %{
         amount: 500,
-        receiver_cpf: receiver.cpf,
+        receiver_cpf: receiver.cpf
       }
 
       {:ok, token, _sender} = Guardian.generate_token(sender)
 
-      conn = conn
-      |> put_req_header("authorization", "Bearer " <> token)
-      |> post(~p"/api/transaction/create", %{transaction: payload})
+      conn =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> post(~p"/api/transaction/create", %{transaction: payload})
 
       assert %{
-        "debit" => %{"amount" => 500} = debit,
-        "credit" => %{"amount" => 500} = credit,
-      } = json_response(conn, 201)["data"]
+               "debit" => %{"amount" => 500} = debit,
+               "credit" => %{"amount" => 500} = credit
+             } = json_response(conn, 201)["data"]
 
       assert credit["user_id"] == sender.id
       assert debit["user_id"] == receiver.id
       assert credit["transaction_id"] == debit["transaction_id"]
 
-      %Balance {total: sender_balance} = sender |> get_balance()
+      %Balance{total: sender_balance} = sender |> get_balance()
       assert sender_balance == 0
 
-      %Balance {total: receiver_balance} = receiver |> get_balance()
+      %Balance{total: receiver_balance} = receiver |> get_balance()
       assert receiver_balance == 500
     end
   end
@@ -61,12 +62,15 @@ defmodule TransactionSystemWeb.EntryControllerTest do
       |> Ecto.assoc(:balance)
       |> Repo.update_all(set: [total: 10])
 
-      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} = Transactions.create_entry(sender, receiver.cpf, 5)
+      {:ok, {%Entry{transaction_id: transaction_id} = _credit, _debit}} =
+        Transactions.create_entry(sender, receiver.cpf, 5)
 
       {:ok, token, _sender} = Guardian.generate_token(sender)
-      conn = conn
-      |> put_req_header("authorization", "Bearer " <> token)
-      |> post(~p"/api/transaction/refund", %{transaction_id: transaction_id})
+
+      conn =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> post(~p"/api/transaction/refund", %{transaction_id: transaction_id})
 
       assert %{"message" => "transaction refunded"} = json_response(conn, 200)
 
@@ -91,9 +95,11 @@ defmodule TransactionSystemWeb.EntryControllerTest do
       end_date = DateTime.now!("Etc/UTC") |> DateTime.to_iso8601()
 
       {:ok, token, _sender} = Guardian.generate_token(sender)
-      conn = conn
-      |> put_req_header("authorization", "Bearer " <> token)
-      |> post(~p"/api/transaction/search", %{start_date: start_date, end_date: end_date})
+
+      conn =
+        conn
+        |> put_req_header("authorization", "Bearer " <> token)
+        |> post(~p"/api/transaction/search", %{start_date: start_date, end_date: end_date})
 
       transactions = json_response(conn, 200)["data"]
 

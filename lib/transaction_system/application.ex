@@ -10,7 +10,8 @@ defmodule TransactionSystem.Application do
     children = [
       TransactionSystemWeb.Telemetry,
       TransactionSystem.Repo,
-      {DNSCluster, query: Application.get_env(:transaction_system, :dns_cluster_query) || :ignore},
+      {DNSCluster,
+       query: Application.get_env(:transaction_system, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: TransactionSystem.PubSub},
       # Start a worker by calling: TransactionSystem.Worker.start_link(arg)
       # {TransactionSystem.Worker, arg},

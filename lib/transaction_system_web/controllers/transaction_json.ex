@@ -6,10 +6,12 @@ defmodule TransactionSystemWeb.TransactionJSON do
   end
 
   def show(%{debit: debit, credit: credit}) do
-    %{data: %{
-      debit: data(debit),
-      credit: data(credit),
-    }}
+    %{
+      data: %{
+        debit: data(debit),
+        credit: data(credit)
+      }
+    }
   end
 
   defp data(%Entry{} = entry) do

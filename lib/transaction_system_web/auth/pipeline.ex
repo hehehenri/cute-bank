@@ -1,5 +1,6 @@
 defmodule TransactionSystemWeb.Auth.Pipeline do
-  use Guardian.Plug.Pipeline, otp_app: :transaction_system,
+  use Guardian.Plug.Pipeline,
+    otp_app: :transaction_system,
     module: TransactionSystemWeb.Auth.Guardian,
     error_handler: TransactionSystemWeb.Auth.GuardianErrorHandler
 

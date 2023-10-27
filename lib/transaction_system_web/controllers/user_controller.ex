@@ -9,8 +9,7 @@ defmodule TransactionSystemWeb.UserController do
 
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params),
-          {:ok, token, _user} <- Guardian.generate_token(user)
-    do
+         {:ok, token, _user} <- Guardian.generate_token(user) do
       conn
       |> put_status(201)
       |> render(:show, user: user, token: token)
@@ -23,7 +22,8 @@ defmodule TransactionSystemWeb.UserController do
       |> put_status(200)
       |> render(:show, user: user, token: token)
     else
-      {:error, :invalid_credentials} -> conn |> put_status(401) |> json(%{message: "unauthorized"})
+      {:error, :invalid_credentials} ->
+        conn |> put_status(401) |> json(%{message: "unauthorized"})
     end
   end
 end

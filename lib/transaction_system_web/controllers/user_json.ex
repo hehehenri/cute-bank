@@ -14,7 +14,7 @@ defmodule TransactionSystemWeb.UserJSON do
       id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
-      cpf: user.cpf,
+      cpf: user.cpf
     }
   end
 

@@ -8,7 +8,7 @@ defmodule TransactionSystem.Repo.Migrations.CreateTransactionEntries do
 
     create table(:transaction_entries) do
       add :amount, :bigint
-      add :kind,   :entry_kind
+      add :kind, :entry_kind
       add :transaction_id, :binary_id
       add :user_id, references(:users)
       add :refunded_at, :utc_datetime, null: true

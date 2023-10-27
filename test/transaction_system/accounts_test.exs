@@ -18,7 +18,7 @@ defmodule TransactionSystem.AccountsTest do
         first_name: "John",
         last_name: "Doe",
         cpf: "000.000.000-00",
-        password: "password",
+        password: "password"
       }
 
       assert {:ok, %User{} = user} = Accounts.create_user(payload)
@@ -28,13 +28,13 @@ defmodule TransactionSystem.AccountsTest do
     end
 
     test "create_user/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(%{
-          first_name: nil,
-          last_name: nil,
-          cpf: nil,
-          password: nil,
-        }
-      )
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.create_user(%{
+                 first_name: nil,
+                 last_name: nil,
+                 cpf: nil,
+                 password: nil
+               })
     end
 
     test "change_user/1 returns a user changeset" do
@@ -47,7 +47,7 @@ defmodule TransactionSystem.AccountsTest do
         first_name: "John",
         last_name: "Doe",
         cpf: "000.000.000-00",
-        password: "password",
+        password: "password"
       }
 
       assert {:ok, %User{} = user} = Accounts.create_user(payload)

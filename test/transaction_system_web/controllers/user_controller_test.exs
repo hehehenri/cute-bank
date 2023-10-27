@@ -7,14 +7,14 @@ defmodule TransactionSystemWeb.UserControllerTest do
     first_name: "some first_name",
     last_name: "some last_name",
     cpf: "000.000.000-00",
-    password: "password",
+    password: "password"
   }
 
-  @invalid_payload%{
+  @invalid_payload %{
     first_name: nil,
     last_name: nil,
     cpf: nil,
-    password: nil,
+    password: nil
   }
 
   setup %{conn: conn} do
@@ -26,10 +26,10 @@ defmodule TransactionSystemWeb.UserControllerTest do
       conn = post(conn, ~p"/api/user/create", user: @payload)
 
       assert %{
-        "first_name" => "some first_name",
-        "last_name" => "some last_name",
-        "cpf" => "000.000.000-00",
-      } = json_response(conn, 201)["data"]["user"]
+               "first_name" => "some first_name",
+               "last_name" => "some last_name",
+               "cpf" => "000.000.000-00"
+             } = json_response(conn, 201)["data"]["user"]
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -40,23 +40,23 @@ defmodule TransactionSystemWeb.UserControllerTest do
 
   @payload %{
     cpf: "000.000.000-00",
-    password: "password",
+    password: "password"
   }
 
   describe "login user" do
-     test "login user when credentials are valid", %{conn: conn} do
-        _user = user_fixture(%{cpf: "000.000.000-00", password: "password"})
+    test "login user when credentials are valid", %{conn: conn} do
+      _user = user_fixture(%{cpf: "000.000.000-00", password: "password"})
 
-        conn = post(conn, ~p"/api/user/login", @payload)
-        response = json_response(conn, 200)
+      conn = post(conn, ~p"/api/user/login", @payload)
+      response = json_response(conn, 200)
 
-        assert %{
-          "cpf" => "000.000.000-00",
-          "first_name" => "John",
-          "last_name" => "Doe",
-        } = response["data"]["user"]
+      assert %{
+               "cpf" => "000.000.000-00",
+               "first_name" => "John",
+               "last_name" => "Doe"
+             } = response["data"]["user"]
 
-        assert response["data"]["token"]
-     end
+      assert response["data"]["token"]
+    end
   end
 end

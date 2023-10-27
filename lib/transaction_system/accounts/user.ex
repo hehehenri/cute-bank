@@ -8,9 +8,9 @@ defmodule TransactionSystem.Accounts.User do
 
   schema "users" do
     field :first_name, :string
-    field :last_name,  :string
-    field :cpf,        :string
-    field :password,   :string
+    field :last_name, :string
+    field :cpf, :string
+    field :password, :string
     has_many :entries, TransactionSystem.Transactions.Entry
     has_one :balance, TransactionSystem.Transactions.Balance
 
@@ -27,7 +27,9 @@ defmodule TransactionSystem.Accounts.User do
     |> put_password_hash()
   end
 
-  defp put_password_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
+  defp put_password_hash(
+         %Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset
+       ) do
     change(changeset, password: Bcrypt.hash_pwd_salt(password))
   end
 
@@ -45,10 +47,10 @@ defmodule TransactionSystem.Accounts.User do
   end
 
   def create(attrs \\ %{}) do
-    with {:ok, user} <- %User{}
-      |> User.changeset(attrs)
-      |> Repo.insert()
-    do
+    with {:ok, user} <-
+           %User{}
+           |> User.changeset(attrs)
+           |> Repo.insert() do
       user
       |> Ecto.build_assoc(:balance)
       |> Balance.changeset(%{})

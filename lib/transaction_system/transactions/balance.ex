@@ -3,8 +3,8 @@ defmodule TransactionSystem.Transactions.Balance do
   import Ecto.Changeset
 
   schema "user_balances" do
-    field      :total,         :integer, default: 0
-    belongs_to :user,           TransactionSystem.Accounts.User
+    field :total, :integer, default: 0
+    belongs_to :user, TransactionSystem.Accounts.User
 
     timestamps(type: :utc_datetime)
   end
@@ -18,6 +18,5 @@ defmodule TransactionSystem.Transactions.Balance do
   end
 
   def refund do
-
   end
 end

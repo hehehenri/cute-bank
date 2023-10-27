@@ -28,9 +28,9 @@ defmodule TransactionSystem.Transactions.Entry do
     from e in Entry,
       where:
         e.user_id == ^user_id and
-        e.inserted_at >= ^start_date and
-        e.inserted_at <= ^end_date and
-        is_nil(e.refunded_at)
+          e.inserted_at >= ^start_date and
+          e.inserted_at <= ^end_date and
+          is_nil(e.refunded_at)
   end
 
   def get_with_transaction_id(transaction_id) do
