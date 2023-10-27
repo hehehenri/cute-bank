@@ -2,32 +2,30 @@
 
 ## Getting Started
 
-1. **Installation**
+1. **Clone and Install**
    - Clone the repository and install the required dependencies.
+```bash
+git clone git@github.com:hnrbs/cute-bank.git
+mix deps.get
+```
 
 2. **Build Containers**
    - Set up your database configuration and any environment-specific settings.
 ```bash
-$ docker-compose up -d
+docker-compose up -d
 ```
 
-3. **Install Dependencies**
-   - Set up your database configuration and any environment-specific settings.
-```bash
-$ mix deps.get
-```
-
-4. **Database Migration**
+3. **Database Migration**
    - Run database migrations to create the necessary tables.
 ```bash
-$ mix ecto.create
-$ mix ecto.migrate
+mix ecto.create
+mix ecto.migrate
 ```
 
-5. **Running the Application**
+4. **Running the Application**
    - Start the application and ensure it's accessible.
 ```bash
-$ mix phx.server
+mix phx.server
 ```
 
 ## Authentication
