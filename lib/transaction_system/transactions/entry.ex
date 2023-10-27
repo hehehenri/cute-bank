@@ -29,11 +29,14 @@ defmodule TransactionSystem.Transactions.Entry do
       where: e.transaction_id == ^transaction_id and is_nil(e.refunded_at),
       order_by: [desc: e.kind]
 
-    [credit, debit | _] = query
+    transactions = query
     |> lock("FOR UPDATE NOWAIT")
     |> Repo.all()
 
-    {:ok, credit, debit}
+    case transactions do
+      [] -> {:error, :transaction_not_found}
+      [credit, debit | _] -> {:ok, credit, debit}
+    end
   end
 
   def refund(%Entry{} = entry) do
@@ -46,7 +49,7 @@ defmodule TransactionSystem.Transactions.Entry do
 
     case entry.kind do
       :credit -> Transactions.deposit(entry.user, entry.amount)
-      :debit -> Transactions.withdraw(entry.user, entry.amount)
+      :debit -> Transactions.withdraw!(entry.user, entry.amount)
     end
   end
 end

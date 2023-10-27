@@ -19,14 +19,14 @@ defmodule TransactionSystem.Transactions do
   end
 
   def deposit(%User{} = user, amount) when is_integer(amount) do
-    %Balance{total: total} = deposit_for_user!(user, amount)
+    %Balance{total: total} = deposit!(user, amount)
 
     {:ok, total}
   end
 
   def withdraw(%User{} = user, amount) when is_integer(amount) do
     try do
-      %Balance{total: total} = withdraw_for_user!(user, amount)
+      %Balance{total: total} = withdraw!(user, amount)
 
       {:ok, total}
     rescue
@@ -35,30 +35,38 @@ defmodule TransactionSystem.Transactions do
   end
 
   def refund(%User{} = user, transaction_id) do
-    Repo.transaction(fn ->
-      {:ok, credit, debit} = Entry.get_with_transaction_id(transaction_id)
+    {:ok, result} = Repo.transaction(fn ->
+      with {:ok, credit, debit} <- Entry.get_with_transaction_id(transaction_id) do
+        if credit.user_id == user.id do
+          try do
+            credit |> Entry.refund()
+            debit |> Entry.refund()
 
-      if credit.user_id == user.id do
-        credit |> Entry.refund()
-        debit |> Entry.refund()
-      else
-        {:error, :user_is_not_the_transaction_owner}
+            :ok
+          rescue
+            NotEnoughFunds -> {:error, :not_enough_funds}
+          end
+        else
+          {:error, :user_is_not_the_transaction_owner}
+        end
       end
     end)
+
+    result
   end
 
-  defp deposit!(%Balance{total: total} = balance, amount) do
+  def deposit!(%Balance{total: total} = balance, amount) do
     balance
       |> Balance.changeset(%{total: total + amount})
       |> Repo.update!()
   end
 
-  defp deposit_for_user!(%User{} = user, amount) do
+  def deposit!(%User{} = user, amount) do
     balance = user |> User.assoc_and_lock(:balance) |> Repo.one!()
     deposit!(balance, amount)
   end
 
-  defp withdraw!(%Balance{total: total} = balance, amount) do
+  def withdraw!(%Balance{total: total} = balance, amount) do
     if total < amount do
       raise NotEnoughFunds
     end
@@ -68,7 +76,7 @@ defmodule TransactionSystem.Transactions do
       |> Repo.update!()
   end
 
-  defp withdraw_for_user!(%User{} = user, amount) do
+  def withdraw!(%User{} = user, amount) do
     balance = user |> User.assoc_and_lock(:balance) |> Repo.one!()
     withdraw!(balance, amount)
   end
@@ -76,8 +84,8 @@ defmodule TransactionSystem.Transactions do
   defp create_entry_transaction(sender, receiver_cpf, amount) when is_number(amount) do
     Repo.transaction(fn ->
       with receiver <- Accounts.get_user_by_cpf!(receiver_cpf) do
-        withdraw_for_user!(sender, amount)
-        deposit_for_user!(receiver, amount)
+        withdraw!(sender, amount)
+        deposit!(receiver, amount)
 
         transaction_id = UUID.generate()
 
